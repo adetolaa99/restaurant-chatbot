@@ -1,6 +1,5 @@
-const socket = io("http://localhost:5000"); // Ensure this URL is correct
+const socket = io("http://localhost:5000");
 
-const chatContainer = document.getElementById("chat-container");
 const chatWindow = document.getElementById("chat-window");
 const chatInput = document.getElementById("chat-input");
 const sendBtn = document.getElementById("send-btn");
@@ -14,25 +13,32 @@ const appendMessage = (text, sender) => {
 };
 
 sendBtn.addEventListener("click", () => {
+  sendMessage();
+});
+
+chatInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    sendMessage();
+  }
+});
+
+const sendMessage = () => {
   const message = chatInput.value.trim();
   if (message) {
     appendMessage(message, "user");
     socket.emit("chat message", message);
     chatInput.value = "";
   }
-});
+};
 
-chatInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    sendBtn.click();
-  }
+socket.on("connect", () => {
+  console.log("Connected to WebSocket server");
 });
 
 socket.on("chat message", (msg) => {
   appendMessage(msg, "bot");
 });
 
-appendMessage(
-  "Select 1 to Place an order\nSelect 99 to checkout order\nSelect 98 to see order history\nSelect 97 to see current order\nSelect 0 to cancel order",
-  "bot"
-);
+socket.on("disconnect", () => {
+  console.log("Disconnected from WebSocket server");
+});
