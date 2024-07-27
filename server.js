@@ -1,42 +1,63 @@
 const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const session = require("express-session");
 const http = require("http");
 const { Server } = require("socket.io");
-const path = require("path");
 
-const {connectDB} = require("./config/db.js");
-const ChatRouter = require("./routes/chat.js");
-const { handleChat } = require("./controllers/chatController.js");
+const { connectDB } = require("./config/db.js");
+const chatController = require("./controllers/chatController.js");
 
 require("dotenv").config();
-
 connectDB();
 
 const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json());
+app.use(
+  session({ secret: "chatbot-secret", resave: false, saveUninitialized: true })
+);
+
+app.use(express.static("public"));
+
 const server = http.createServer(app);
-const io = new Server(server)
+const io = new Server(server);
 
-app.use(express.static(path.join(__dirname, "public")));
 io.on("connection", (socket) => {
-  console.log("A user connected");
+  console.log("Websocket connected :)");
 
-  socket.on("chat message", async (message) => {
-    console.log(`Received message from client: ${message}`);
-    const reply = await handleChat(message);
-    console.log(`Sending reply to client: ${reply}`);
-    socket.emit("chat message", reply);
+  // Send initial options to the user
+  socket.emit(
+    "chat message",
+    `
+    Welcome to A's Restaurant! Please choose an option below:
+    <br>Select 1 to Place an order
+    <br>Select 99 to checkout order
+    <br>Select 98 to see order history
+    <br>Select 97 to see current order
+    <br>Select 0 to cancel order
+  `
+  );
+
+  socket.on("chat message", async (msg) => {
+    console.log("message: " + msg);
+    const sessionId = socket.id;
+    try {
+      const reply = await chatController.handleChat(msg, sessionId);
+      socket.emit("chat message", reply);
+    } catch (error) {
+      console.error("Error handling chat message:", error);
+      socket.emit("chat message", "An error occurred. Please try again.");
+    }
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    console.log("Websocket disconnected :(");
   });
 });
 
-app.use("/api", ChatRouter);
-app.get("/", (req, res) => {
-  res.send("Welcome!");
-});
-
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`The app is running on http://localhost:${PORT}`);
 });

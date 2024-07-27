@@ -1,44 +1,28 @@
-const socket = io("http://localhost:5000");
-
-const chatWindow = document.getElementById("chat-window");
-const chatInput = document.getElementById("chat-input");
-const sendBtn = document.getElementById("send-btn");
-
-const appendMessage = (text, sender) => {
-  const messageElement = document.createElement("div");
-  messageElement.className = `message ${sender}-message`;
-  messageElement.innerText = text;
-  chatWindow.appendChild(messageElement);
-  chatWindow.scrollTop = chatWindow.scrollHeight;
-};
-
-sendBtn.addEventListener("click", () => {
-  sendMessage();
-});
-
-chatInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    sendMessage();
-  }
-});
-
-const sendMessage = () => {
-  const message = chatInput.value.trim();
-  if (message) {
-    appendMessage(message, "user");
-    socket.emit("chat message", message);
-    chatInput.value = "";
-  }
-};
+var socket = io();
 
 socket.on("connect", () => {
-  console.log("Connected to WebSocket server");
+  console.log("WebSocket connection established");
 });
 
-socket.on("chat message", (msg) => {
-  appendMessage(msg, "bot");
+socket.on("chat message", function (msg) {
+  addMessage("bot", msg);
 });
 
-socket.on("disconnect", () => {
-  console.log("Disconnected from WebSocket server");
-});
+document.getElementById("send-button").onclick = function () {
+  var input = document.getElementById("input");
+  if (input.value) {
+    var message = input.value;
+    addMessage("user", message);
+    socket.emit("chat message", message);
+    input.value = "";
+  }
+};
+
+function addMessage(sender, message) {
+  var messages = document.getElementById("messages");
+  var messageElement = document.createElement("div");
+  messageElement.className = "message " + sender;
+  messageElement.innerHTML = message.replace(/\n/g, "<br>");
+  messages.appendChild(messageElement);
+  messages.scrollTo({ top: messages.scrollHeight, behavior: "smooth" });
+}
