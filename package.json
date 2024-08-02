@@ -2,10 +2,10 @@
   "name": "restaurant-chatbot",
   "version": "1.0.0",
   "description": "A simple chatbot for placing restaurant orders",
-  "main": "src/server.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/server.js"
+    "start": "node server.js"
   },
   "author": "Hassan Nofisat Adetola",
   "license": "ISC",
