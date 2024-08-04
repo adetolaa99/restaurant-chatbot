@@ -46,14 +46,12 @@ const handleChat = async (message, sessionId) => {
                 )
                 .join("<br>")}`
             : "No order history!";
-        userSession.expectingItemSelection = false;
         break;
       case "97":
         reply =
           userSession.currentOrder.length > 0
             ? `Current Order:<br>${userSession.currentOrder.join(", ")}`
             : "No current order!";
-        userSession.expectingItemSelection = false;
         break;
       case "0":
         userSession.currentOrder = [];
@@ -69,9 +67,8 @@ const handleChat = async (message, sessionId) => {
           } else {
             reply = "Invalid selection! Please select a valid item number.";
           }
-          // Keep expecting item selection until the user checks out or cancels the order
         } else {
-          reply = "Invalid input! Please select a valid option.";
+          reply = "Invalid input! Please select 1 to place an order.";
         }
     }
 
