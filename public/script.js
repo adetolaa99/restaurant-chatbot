@@ -24,5 +24,9 @@ function addMessage(sender, message) {
   messageElement.className = "message " + sender;
   messageElement.innerHTML = message.replace(/\n/g, "<br>");
   messages.appendChild(messageElement);
-  messages.scrollTo({ top: messages.scrollHeight, behavior: "smooth" });
+
+  messages.scrollTo({
+    top: messages.scrollHeight,
+    behavior: "smooth",
+  });
 }
