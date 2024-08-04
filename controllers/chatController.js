@@ -4,8 +4,8 @@ const menuItems = [
   { name: "Pizza", price: "₦4780" },
   { name: "Burger", price: "₦3250" },
   { name: "Chicken Wings", price: "₦5125" },
-  { name: "Shawarma", price: "₦3500" },
-  { name: "Milkshake", price: "₦3000" },
+  { name: "Shawarma", price: "₦3100" },
+  { name: "Milkshake", price: "₦2500" },
 ];
 
 const handleChat = async (message, sessionId) => {
@@ -33,7 +33,7 @@ const handleChat = async (message, sessionId) => {
           userSession.orderHistory.push([...userSession.currentOrder]);
           userSession.currentOrder = [];
         } else {
-          reply = "No order to place. Select 1 to place an order.";
+          reply = "No order to place! Select 1 to place an order.";
         }
         userSession.expectingItemSelection = false;
         break;
@@ -45,19 +45,19 @@ const handleChat = async (message, sessionId) => {
                   (order, index) => `Order ${index + 1}: ${order.join(", ")}`
                 )
                 .join("<br>")}`
-            : "No order history.";
+            : "No order history!";
         userSession.expectingItemSelection = false;
         break;
       case "97":
         reply =
           userSession.currentOrder.length > 0
             ? `Current Order:<br>${userSession.currentOrder.join(", ")}`
-            : "No current order.";
+            : "No current order!";
         userSession.expectingItemSelection = false;
         break;
       case "0":
         userSession.currentOrder = [];
-        reply = "Order canceled.";
+        reply = "Order canceled!";
         userSession.expectingItemSelection = false;
         break;
       default:
@@ -67,11 +67,11 @@ const handleChat = async (message, sessionId) => {
             userSession.currentOrder.push(menuItems[itemIndex].name);
             reply = `${menuItems[itemIndex].name} added to order! Select more items or type 99 to checkout.`;
           } else {
-            reply = "Invalid selection. Please select a valid item number.";
+            reply = "Invalid selection! Please select a valid item number.";
           }
           // Keep expecting item selection until the user checks out or cancels the order
         } else {
-          reply = "Invalid input. Please select a valid option.";
+          reply = "Invalid input! Please select a valid option.";
         }
     }
 
@@ -81,7 +81,7 @@ const handleChat = async (message, sessionId) => {
     return reply;
   } catch (error) {
     console.error("Error in handleChat:", error);
-    return "An error occurred. Please try again.";
+    return "An error occurred! Please try again.";
   }
 };
 
