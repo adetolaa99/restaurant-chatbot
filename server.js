@@ -24,14 +24,15 @@ app.use(express.static("public"));
 const server = http.createServer(app);
 const io = new Server(server);
 
+// Handle WebSocket connections
 io.on("connection", (socket) => {
-  console.log("Websocket connected :)");
+  console.log("User connected :)");
 
-  // Send initial options to the user
+  // Send initial options to the user upon connection
   socket.emit(
     "chat message",
     `
-    Welcome to A's Restaurant! Please choose an option below:
+    Welcome to A's Bistro! Please choose an option below:
     <br>Select 1 to Place an order
     <br>Select 99 to checkout order
     <br>Select 98 to see order history
@@ -40,6 +41,7 @@ io.on("connection", (socket) => {
   `
   );
 
+  // Handle incoming chat messages from the client
   socket.on("chat message", async (msg) => {
     console.log("message: " + msg);
     const sessionId = socket.id;
