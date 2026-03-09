@@ -24,11 +24,9 @@ app.use(express.static("public"));
 const server = http.createServer(app);
 const io = new Server(server);
 
-// Handle WebSocket connections
 io.on("connection", (socket) => {
   console.log("User connected :)");
 
-  // Send initial options to the user upon connection
   socket.emit(
     "chat message",
     `
@@ -41,7 +39,6 @@ io.on("connection", (socket) => {
   `
   );
 
-  // Handle incoming chat messages from the client
   socket.on("chat message", async (msg) => {
     console.log("message: " + msg);
     const sessionId = socket.id;
